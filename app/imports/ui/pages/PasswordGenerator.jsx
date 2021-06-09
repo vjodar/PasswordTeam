@@ -1,19 +1,49 @@
 import React from 'react';
-import { Grid, Image } from 'semantic-ui-react';
+import { Grid, Segment } from 'semantic-ui-react';
+import { AutoForm, AutoField, ErrorsField, SubmitField } from 'uniforms-semantic';
+import swal from 'sweetalert';
+import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
+import SimpleSchema from 'simpl-schema';
+
+const passwordGeneratorSchema = new SimpleSchema2Bridge(
+    new SimpleSchema({
+        'length of password': 
+        { 
+            type: Number, 
+            min: 1, max: 50, 
+            required: true 
+        },
+
+        'include capital letters': 
+        { 
+            type: Boolean, 
+            required: false 
+        },
+
+        'include special characters': 
+        { 
+            type: Boolean, 
+            required: false 
+        }
+    })
+  )
 
 /** A simple static component to render some text for the landing page. */
 class PasswordGenerator extends React.Component {
   render() {
     return (
-      <Grid id='landing-page' verticalAlign='middle' textAlign='center' container>
+      <Grid id='passwordGenerator' container centered>
 
-        <Grid.Column width={4}>
-          <Image size='small' circular src="/images/meteor-logo.png"/>
-        </Grid.Column>
-
-        <Grid.Column width={8}>
-          <h1>Welcome to the password generator</h1>
-          <p>Now get to work and modify this app!</p>
+        <Grid.Column width={5}>
+        <AutoForm schema={passwordGeneratorSchema} onSubmit={(model) => swal(JSON.stringify(model))} >
+            <Segment>
+                <AutoField name='length of password' decimal={false}/>
+                <AutoField name='include capital letters'/> 
+                <AutoField name='include special characters'/>       
+                <SubmitField value='Generate My Password'/>
+                <ErrorsField/>
+            </Segment>
+        </AutoForm>
         </Grid.Column>
 
       </Grid>
