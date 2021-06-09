@@ -5,6 +5,26 @@ import swal from 'sweetalert';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import SimpleSchema from 'simpl-schema';
 
+function passwordGenerator(formModel) { 
+
+    const lowerCaseLetters = Array.from("abcdefghijklmnopqrstuvwxyz");
+    const upperCaseLetters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    const numbers = Array.from("1234567890");
+    const specialCharacters = Array.from("!@#$%^*");
+    let characterPool = lowerCaseLetters;
+    let generatedPassword = "";
+  
+    if(formModel['include capital letters']) { characterPool = characterPool.concat(upperCaseLetters) }
+    if(formModel['include numbers']) { characterPool = characterPool.concat(numbers) }
+    if(formModel['include special characters']) { characterPool = characterPool.concat(specialCharacters) }
+    
+    for(let i=0; i < formModel['length of password']; i++) {
+    	generatedPassword += characterPool[Math.floor(Math.random() * characterPool.length)]
+    }
+
+    return generatedPassword;
+}
+
 const passwordGeneratorSchema = new SimpleSchema2Bridge(
     new SimpleSchema({
         'length of password': 
@@ -15,6 +35,12 @@ const passwordGeneratorSchema = new SimpleSchema2Bridge(
         },
 
         'include capital letters': 
+        { 
+            type: Boolean, 
+            required: false 
+        },
+
+        'include numbers': 
         { 
             type: Boolean, 
             required: false 
@@ -35,12 +61,13 @@ class PasswordGenerator extends React.Component {
       <Grid id='passwordGenerator' container centered>
 
         <Grid.Column width={5}>
-        <AutoForm schema={passwordGeneratorSchema} onSubmit={(model) => swal(JSON.stringify(model))} >
+        <AutoForm schema={passwordGeneratorSchema} onSubmit={(model) => swal(passwordGenerator(model))}>
             <Segment>
                 <AutoField name='length of password' decimal={false}/>
                 <AutoField name='include capital letters'/> 
+                <AutoField name='include numbers'/>
                 <AutoField name='include special characters'/>       
-                <SubmitField value='Generate My Password'/>
+                <SubmitField value='Generate A Password'/>
                 <ErrorsField/>
             </Segment>
         </AutoForm>
